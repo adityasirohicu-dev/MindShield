@@ -1,0 +1,188 @@
+@baseUrl = http://localhost:8000
+@otp = 123456
+
+### Health
+GET {{baseUrl}}/health
+
+### Request local presentation OTP
+POST {{baseUrl}}/v1/auth/otp
+Content-Type: application/json
+
+{
+  "credential": "personnel1",
+  "purpose": "login"
+}
+
+### Login personnel
+POST {{baseUrl}}/v1/auth/login
+Content-Type: application/json
+
+{
+  "credential": "personnel1",
+  "otp": "{{otp}}"
+}
+
+### Login officer
+POST {{baseUrl}}/v1/auth/login
+Content-Type: application/json
+
+{
+  "credential": "officer",
+  "otp": "{{otp}}"
+}
+
+### Login counsellor
+POST {{baseUrl}}/v1/auth/login
+Content-Type: application/json
+
+{
+  "credential": "counsellor",
+  "otp": "{{otp}}"
+}
+
+### Login admin
+POST {{baseUrl}}/v1/auth/login
+Content-Type: application/json
+
+{
+  "credential": "admin",
+  "otp": "{{otp}}"
+}
+
+### Refresh
+POST {{baseUrl}}/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "{{refresh_token}}"
+}
+
+### Consent list
+GET {{baseUrl}}/v1/consent
+Authorization: Bearer {{token}}
+
+### Consent grant accelerometer
+POST {{baseUrl}}/v1/consent
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "data_type": "accelerometer",
+  "status": "granted"
+}
+
+### Check-in (Stitch fields)
+POST {{baseUrl}}/v1/checkins
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "readiness_state": "fatigued_strained",
+  "duty_stress_10": 7,
+  "sleep_hours": 5.5,
+  "rest_quality": "interrupted",
+  "friction_factors": ["extended_duty_hours"],
+  "note": null,
+  "early_warning_consent": true
+}
+
+### My check-ins
+GET {{baseUrl}}/v1/checkins/me?range=14d
+Authorization: Bearer {{token}}
+
+### Duty context (admin)
+POST {{baseUrl}}/v1/context/duty
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+  "user_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+  "leave_days_recent": 0,
+  "deployment_status": "deployed",
+  "duty_hours_weekly": 64,
+  "transfer_count_recent": 1,
+  "training_load": 4.0
+}
+
+### Sensor derived feature
+POST {{baseUrl}}/v1/sensors/features
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "feature_type": "activity_level",
+  "value": {"load": 0.62},
+  "window_start": "2026-09-22T00:00:00Z",
+  "window_end": "2026-09-22T08:00:00Z"
+}
+
+### Risk me (personnel)
+GET {{baseUrl}}/v1/risk/me
+Authorization: Bearer {{token}}
+
+### Risk queue (officer)
+GET {{baseUrl}}/v1/risk/queue?risk_level=elevated,high&sort=recency
+Authorization: Bearer {{officer_token}}
+
+### Risk detail (officer)
+GET {{baseUrl}}/v1/risk/{{assessment_id}}
+Authorization: Bearer {{officer_token}}
+
+### Risk review
+POST {{baseUrl}}/v1/risk/{{assessment_id}}/review
+Authorization: Bearer {{officer_token}}
+Content-Type: application/json
+
+{
+  "action_taken": "offer_counselling",
+  "notes": "Human review complete"
+}
+
+### Counselling request
+POST {{baseUrl}}/v1/counselling/requests
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "source": "self_requested",
+  "channel": "secure_chat",
+  "urgency": "priority_4h",
+  "time_window": "Tonight 2100-2300",
+  "preferred_contact": "secure_chat"
+}
+
+### My counselling requests
+GET {{baseUrl}}/v1/counselling/requests/me
+Authorization: Bearer {{token}}
+
+### Counsellor queue
+GET {{baseUrl}}/v1/counselling/queue
+Authorization: Bearer {{counsellor_token}}
+
+### Patch counselling
+PATCH {{baseUrl}}/v1/counselling/requests/{{request_id}}
+Authorization: Bearer {{counsellor_token}}
+Content-Type: application/json
+
+{
+  "status": "assigned"
+}
+
+### Audit logs (admin)
+GET {{baseUrl}}/v1/audit/logs
+Authorization: Bearer {{admin_token}}
+
+### Privacy sources
+GET {{baseUrl}}/v1/privacy/sources
+Authorization: Bearer {{token}}
+
+### Privacy purge
+POST {{baseUrl}}/v1/privacy/purge
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### Org trends
+GET {{baseUrl}}/v1/org/trends
+Authorization: Bearer {{admin_token}}
